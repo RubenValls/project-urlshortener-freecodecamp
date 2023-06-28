@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-export const app = express();
+const app = express();
 const { MongoClient } = require('mongodb')
 
 // Basic Configuration
@@ -51,7 +51,7 @@ const redirectUrl = async (req) => {
 }
 
 app.get('/', function(req, res) {
-  res.sendFile(process.cwd() + './views/index.html');
+  res.sendFile(process.cwd() + '/views/index.html');
 });
 
 // Your first API endpoint
@@ -79,5 +79,3 @@ app.post('/api/shorturl', function (req, res) {
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
 });
-
-export default app;
