@@ -44,6 +44,12 @@ const urlShorterMiddleware = async (req) =>{
   }
 }
 
+const redirectUrl = async (req) => {
+  let _shorturl = Number(req?.params?.shorturl)
+  let _url = await urls.findOne({short_url: _shorturl})
+  return _url?.original_url;
+}
+
 app.get('/', function(req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
 });
@@ -51,6 +57,10 @@ app.get('/', function(req, res) {
 // Your first API endpoint
 app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
+});
+
+app.get('/api/shorturl/:shorturl', function(req, res) {
+  redirectUrl(req).then((response) => res.redirect(response));
 });
 
 app.post('/api/shorturl', function (req, res) {
