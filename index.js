@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-export const app = express();
+const app = express();
 const { MongoClient } = require('mongodb')
 
 // Basic Configuration
@@ -79,3 +79,5 @@ app.post('/api/shorturl', function (req, res) {
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
 });
+
+export default app;
