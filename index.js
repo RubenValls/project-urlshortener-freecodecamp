@@ -2,9 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const { MongoClient } = require('mongodb')
 
 // Basic Configuration
 const port = process.env.PORT || 3000;
+const client = new MongoClient(process.env.DB_URI)
+const db = client.db('urlshortener')
+const urls = db.collection('urls')
 
 app.use(cors());
 app.use(express.urlencoded());
@@ -12,7 +16,7 @@ app.use(express.json());
 
 app.use('/public', express.static(`${process.cwd()}/public`));
 
-const urlShorterMiddleware = (req) =>{
+const urlShorterMiddleware = async (req) =>{
   const pattern = new RegExp(
     '^([a-zA-Z]+:\\/\\/)?' + // protocol
       '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
@@ -22,15 +26,17 @@ const urlShorterMiddleware = (req) =>{
       '(\\#[-a-z\\d_]*)?$', // fragment locator
     'i'
   );
+  const urlsNumber = await urls.countDocuments({})
   const _url = req?.body?.url
-  let _urlShorted = 0
   let _response = {}
 
   if(pattern.test(_url)){
-    return _response = {
+    _response = {
       original_url: _url,
-      short_url: _urlShorted
-    };
+      short_url: urlsNumber,
+    }
+    await urls.insertOne(_response);
+    return _response;
   }else{
     return _response = {
       error: "Invalid URL",
@@ -48,7 +54,12 @@ app.get('/api/hello', function(req, res) {
 });
 
 app.post('/api/shorturl', function (req, res) {
-  res.json(urlShorterMiddleware(req));
+  urlShorterMiddleware(req).then((response) => {
+    res.json({ 
+      original_url: response.original_url,
+      short_url: response.short_url 
+    });
+  })
 });
 
 app.listen(port, function() {
