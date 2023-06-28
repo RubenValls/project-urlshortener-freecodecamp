@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const app = express();
+export const app = express();
 const { MongoClient } = require('mongodb')
 
 // Basic Configuration
