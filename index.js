@@ -55,7 +55,11 @@ app.get('/api/hello', function(req, res) {
 
 app.post('/api/shorturl', function (req, res) {
   urlShorterMiddleware(req).then((response) => {
-    res.json({ 
+    response.error 
+      ? res.json({ 
+        error: 'Invalid url'
+        })
+      : res.json({ 
       original_url: response.original_url,
       short_url: response.short_url 
     });
